@@ -12,6 +12,14 @@ common_services = {
     443: "HTTPS"
 }
 
+risky_services = {
+    "TELNET": "HIGH RISK – Unencrypted remote access",
+    "FTP": "MEDIUM RISK – Credentials sent in clear text",
+    "HTTP": "LOW RISK – Consider HTTPS",
+    "SSH": "LOW RISK – Secure but should be restricted"
+}
+
+
 
 for port in ports_to_scan:
         
@@ -31,6 +39,9 @@ for port in ports_to_scan:
         if result == 0 :
             service = common_services.get(port , "UNKNOWN ")
             print(f" port {port} is open -> {service}")
+
+            if service in risky_services:
+                print(f"Risk : {risky_services[service]}")
 
             if port == 22:
             
