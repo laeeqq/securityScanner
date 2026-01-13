@@ -61,7 +61,7 @@ risk_scores = {
 total_risk_score = 0
 scan_results = []
 
-lock = threading.lock()
+lock = threading.Lock()
 
 def scan_port(port):
     global total_risk_score
@@ -133,8 +133,15 @@ def scan_port(port):
 
 threads = []
 
+
 for port in ports_to_scan:
-    scan_port(port)
+    t = threading.Thread(target=scan_port, args=(port,))
+    threads.append(t)
+    t.start()
+
+for t in threads:
+    t.join()
+
 
 print("\n Scan Results")
 
