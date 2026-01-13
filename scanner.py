@@ -45,11 +45,12 @@ common_services = {
 }
 
 risky_services = {
-    "TELNET": "HIGH RISK – Unencrypted remote access",
-    "FTP": "MEDIUM RISK – Credentials sent in clear text",
-    "HTTP": "LOW RISK – Consider HTTPS",
-    "SSH": "LOW RISK – Secure but should be restricted"
+    "TELNET": "HIGH",
+    "FTP": "MEDIUM",
+    "HTTP": "LOW",
+    "SSH": "LOW"
 }
+
 
 risk_scores = {
      "HIGH": 3,
