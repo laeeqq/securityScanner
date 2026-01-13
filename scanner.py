@@ -5,6 +5,7 @@
 import socket
 import csv
 import sys # access to command line arguments
+import threading
 
 if len(sys.argv) < 2:
     print("Usage: python3 scanner.py <target_ip> [start-end]")
@@ -60,6 +61,8 @@ risk_scores = {
 total_risk_score = 0
 scan_results = []
 
+lock = threading.lock()
+
 def scan_port(port):
     global total_risk_score
 
@@ -75,55 +78,60 @@ def scan_port(port):
     ## attempt to connect to the target
     result = s.connect_ex((target_ip, port))
 
-    if result == 0:
-        service = common_services.get(port, "UNKNOWN")
+    with lock:
+        if result == 0:
+            service = common_services.get(port, "UNKNOWN")
 
-        scan_results.append({
-            "port": port,
-            "service": service,
-            "status": "OPEN"
-        })
+            scan_results.append({
+                "port": port,
+                "service": service,
+                "status": "OPEN"
+            })
 
-        print(f" port {port} is open -> {service}")
+            print(f" port {port} is open -> {service}")
 
-        if service in risky_services:
-            risk_level = risky_services[service]
-            total_risk_score += risk_scores[risk_level]
+            if service in risky_services:
+                risk_level = risky_services[service]
+                total_risk_score += risk_scores[risk_level]
 
-            print(f"Risk Level: {risk_level}")
-            print(f"Risk Info: {risk_descriptions[risk_level]}")
+                print(f"Risk Level: {risk_level}")
+                print(f"Risk Info: {risk_descriptions[risk_level]}")
 
-        if port == 22:
-            try:
-                banner = s.recv(1024)
-                print(f"Banner: {banner.decode().strip()}")
-            except:
-                print("Banner: Not Received")
+            if port == 22:
+                try:
+                    banner = s.recv(1024)
+                    print(f"Banner: {banner.decode().strip()}")
+                except:
+                    print("Banner: Not Received")
 
-        if port == 80:
-            try:
-                http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
-                s.send(http_request.encode())
+            if port == 80:
+                try:
+                    http_request = "GET / HTTP/1.1\r\nHost: localhost\r\n\r\n"
+                    s.send(http_request.encode())
 
-                response = s.recv(1024)
-                headers = response.decode(errors="ignore").split("\r\n")
+                    response = s.recv(1024)
+                    headers = response.decode(errors="ignore").split("\r\n")
 
-                print("HTTP Headers:")
-                for header in headers:
-                    if header:
-                        print(header)
-            except:
-                print("Could not retrieve HTTP headers")
+                    print("HTTP Headers:")
+                    for header in headers:
+                        if header:
+                            print(header)
+                except:
+                    print("Could not retrieve HTTP headers")
 
-    else:
-        scan_results.append({
-            "port": port,
-            "service": "N/A",
-            "status": "CLOSED"
-        })
-        print(f" port {port} is closed")
+        else:
+            scan_results.append({
+                "port": port,
+                "service": "N/A",
+                "status": "CLOSED"
+            })
+            print(f" port {port} is closed")
 
-    s.close()
+        s.close()
+
+
+
+threads = []
 
 for port in ports_to_scan:
     scan_port(port)
