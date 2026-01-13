@@ -27,7 +27,7 @@ risk_scores = {
 
 total_risk_score = 0
 
-
+scan_results =[]
 
 
 for port in ports_to_scan:
@@ -46,7 +46,15 @@ for port in ports_to_scan:
         result = s.connect_ex((target_ip , port))
 
         if result == 0 :
+ 
             service = common_services.get(port , "UNKNOWN ")
+           
+            scan_results.append({
+                "port":  port,
+                "service": service,
+                "status": "OPEN"
+            })
+
             print(f" port {port} is open -> {service}")
 
             if service in risky_services:
@@ -88,10 +96,20 @@ for port in ports_to_scan:
         
         else:
 
-
+            scan_results.append({
+                "port": port,
+                "service": "N/A",
+                "status": "CLOSED"
+            })
             print(f" port {port} is closed")
 
         s.close()
+
+
+print("\n Scan Results")
+
+for result in scan_results:
+    print(f"port {result['port']} |Status: {result['status']}  | Service: {result['service']}")
 
 print("\n--- Overall Risk Assessment ---")
 
