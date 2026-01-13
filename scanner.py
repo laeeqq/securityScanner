@@ -5,18 +5,35 @@
 
 import socket
 import csv
-import sys
+import sys # access to command line arguments
+
+if len(sys.argv) < 2:
+    print("Usage: python3 scanner.py <target_ip> [start-end]")
+    sys.exit(1)
+
+target_ip = sys.argv[1]
 
 # sys = ["scanner.py", "127.0.0.1"]
 
-if len(sys.argv) < 2:
-    print("Usage : python3 scanner.py 127.0.0.1")
-    sys.exit(1) #stops the program safely
+start_port = 1
+end_port = 1024
+
+if len(sys.argv) >= 3:
+    port_range = sys.argv[2]
+
+    try:
+        start_port, end_port = port_range.split("-")
+        start_port = int(start_port)
+        end_port = int(end_port)
+    except:
+        print("Invalid port range format. Use: start-end")
+        sys.exit(1) #stops the program safely
 
 target_ip = sys.argv[1]
 
 
-ports_to_scan = [22,80,443] 
+ports_to_scan = range(start_port, end_port + 1)
+
 
 common_services = {
     22: "SSH",
