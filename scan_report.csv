@@ -1,0 +1,4 @@
+Port,Status,Service
+22,OPEN,SSH
+80,CLOSED,N/A
+443,CLOSED,N/A

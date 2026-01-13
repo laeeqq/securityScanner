@@ -1,4 +1,5 @@
 import socket
+import csv
 
 target_ip = "127.0.0.1"
 ports_to_scan = [22,80,443] 
@@ -119,3 +120,18 @@ elif total_risk_score >= 3:
     print("Overall Risk Level: MEDIUM")
 else:
     print("Overall Risk Level: LOW")
+
+
+#writing to a csv file
+
+with open("scan_report.csv", mode = "w" , newline="") as file:
+    writer = csv.writer(file)
+
+    writer.writerow(["Port" , "Status" , "Service"])
+
+    for result in scan_results:
+        writer.writerow([
+            result["port"],
+            result["status"],
+            result["service"]
+        ])
