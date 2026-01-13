@@ -1,7 +1,21 @@
+#Testing 
+ # - get the ip a of the computer 
+ # - nmap -sT(tcp connect scan) -p( which ports) ip address 
+
+
 import socket
 import csv
+import sys
 
-target_ip = "127.0.0.1"
+# sys = ["scanner.py", "127.0.0.1"]
+
+if len(sys.argv) < 2:
+    print("Usage : python3 scanner.py 127.0.0.1")
+    sys.exit(1) #stops the program safely
+
+target_ip = sys.argv[1]
+
+
 ports_to_scan = [22,80,443] 
 
 common_services = {
