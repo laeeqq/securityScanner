@@ -19,6 +19,15 @@ risky_services = {
     "SSH": "LOW RISK – Secure but should be restricted"
 }
 
+risk_scores = {
+     "HIGH": 3,
+    "MEDIUM": 2,
+    "LOW": 1
+}
+
+total_risk_score = 0
+
+
 
 
 for port in ports_to_scan:
@@ -42,6 +51,16 @@ for port in ports_to_scan:
 
             if service in risky_services:
                 print(f"Risk : {risky_services[service]}")
+
+                if "HIGH" in risky_services :
+                    total_risk_score += risk_scores["HIGH"]
+                
+                if "MEDIUM" in risky_services:
+                    total_risk_score += risk_scores["MEDIUM"]
+                
+                if "LOW" in risky_services:
+                    total_risk_score += risk_scores["LOW"]
+
 
             if port == 22:
             
@@ -73,3 +92,12 @@ for port in ports_to_scan:
             print(f" port {port} is closed")
 
         s.close()
+
+print("\n--- Overall Risk Assessment ---")
+
+if total_risk_score >= 6:
+    print("Overall Risk Level: HIGH")
+elif total_risk_score >= 3:
+    print("Overall Risk Level: MEDIUM")
+else:
+    print("Overall Risk Level: LOW")
